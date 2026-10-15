@@ -1,0 +1,9 @@
+empty=[]
+scalars=[1, 2, 3]
+trailing=[1, 2,]
+multiline=[
+  1,
+  2
+]
+nested=[[1],[2]]
+mixed=[1,{a=2},[3]]

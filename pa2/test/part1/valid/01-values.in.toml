@@ -1,0 +1,8 @@
+s="x"
+l='y'
+i=42
+h=0xFF
+f=3.14
+b=false
+n=-inf
+dotted.key."q"=1

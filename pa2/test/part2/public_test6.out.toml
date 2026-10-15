@@ -1,0 +1,10 @@
+"1234" = "digits"
+"true" = 1
+1a = 2
+-9a = 3
+key_with-dash = 4
+
+["0x10"]
+"a.b" = 5
+a."b.c".d = 6
+'lit key' = 7

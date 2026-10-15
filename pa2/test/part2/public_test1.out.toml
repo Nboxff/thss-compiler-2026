@@ -1,0 +1,10 @@
+[package]
+name = "toml-formatter"
+version = "0.1.0"
+keywords = ["toml", "formatter", "cli"]
+
+[dependencies]
+regex = { version = "1.10", features = ["unicode"] }
+
+[[bin]]
+name = "tlfmt"

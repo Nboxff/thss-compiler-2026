@@ -1,0 +1,5 @@
+esc = "tab\there\nnl \"q\" backslash \\ unicode \u0041"
+literal = 'no \escape here'
+hash = "value # not a comment"
+semi = "a;b=c"
+numbers_as_strings = ["1", "2"]

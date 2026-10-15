@@ -1,0 +1,4 @@
+# Service configuration
+[server]  # basic configuration
+host="127.0.0.1"# listen address
+port=8080

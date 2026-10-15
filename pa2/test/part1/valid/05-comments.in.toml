@@ -1,0 +1,6 @@
+# top
+
+top=1  # trailing
+
+[t]  # table comment
+x=2

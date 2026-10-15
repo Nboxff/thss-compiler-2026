@@ -1,0 +1,11 @@
+k = 1
+
+# attached to table
+[t]
+x = 2
+
+# run one
+
+# run two
+[u]
+y = 3

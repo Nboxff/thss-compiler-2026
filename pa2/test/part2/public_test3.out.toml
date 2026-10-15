@@ -1,0 +1,14 @@
+hex = 0xFF
+oct = 0o17
+bin = 0b1010
+neg = -42
+pi = 3.14
+exp = 1e10
+ninf = -inf
+b = true
+s = "aA\t"
+l = 'C:\path'
+a.b.c = 1
+"quoted.key" = 2
+'lit' = 3
+key_with-dash = 1_000
