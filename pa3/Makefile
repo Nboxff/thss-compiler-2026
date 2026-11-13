@@ -14,12 +14,11 @@ build: antlr
 test: build
 	python3 run_tests.py
 
-# Each part builds only its own executable, so an unfinished part does not
-# block testing the other.
-test-part1: antlr
-	mkdir -p build && cd build && cmake .. && $(MAKE) sysy_typecheck -j4
+# Part 1 uses the same Java parser harness as Gradescope and needs no C++ code.
+test-part1:
 	python3 run_tests.py --part1
 
+# Parts 2 and 3 build only their own executable.
 test-part2: antlr
 	mkdir -p build && cd build && cmake .. && $(MAKE) sysy_typecheck -j4
 	python3 run_tests.py --part2

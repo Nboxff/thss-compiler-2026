@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """Local test runner for PA3.
 
+Part 1 generates a Java parser in a temporary directory and uses ParseCheck,
+the same grammar-only harness as Gradescope. It needs a JDK but no C++ code.
 Part 2 and Part 3 are separate executables:
   * build/sysy_typecheck  -> type-check diagnostics on stderr (Part 2),
   * build/sysy_callgraph  -> Mermaid call graph on stdout (Part 3).
 
 Test layout (local convenience; the OJ uses its own hidden cases):
-  test/part1/valid/*.c     syntactically valid programs   (exit code 0)
-  test/part1/invalid/*.c   syntactically invalid programs  (exit code != 0)
+  test/part1/valid/*.c     syntactically valid programs   (zero syntax errors)
+  test/part1/invalid/*.c   syntactically invalid programs  (syntax errors)
   test/part2/<name>.c + .ans   Part 2 expected stderr
                                (only "Error type N at Line M" and the
                                 "No semantic errors..." line are compared)
@@ -28,8 +30,10 @@ import difflib
 import glob
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -113,6 +117,34 @@ def ensure_binary(binary):
     return None
 
 
+def prepare_part1(work):
+    """Generate and compile only the grammar, without CMake or student C++."""
+    jar = os.environ.get("ANTLR_JAR")
+    if jar:
+        jar = os.path.abspath(jar)
+    else:
+        jars = sorted(glob.glob(os.path.join(ROOT, "lib", "antlr-*-complete.jar")))
+        if not jars:
+            raise RuntimeError("lib/ 下未找到 ANTLR jar")
+        jar = jars[0]
+    for name in ("SysYLexer.g4", "SysYParser.g4"):
+        shutil.copy2(os.path.join(ROOT, "grammar", name), work)
+    shutil.copy2(os.path.join(PART1_DIR, "ParseCheck.java"), work)
+    result = subprocess.run(
+        ["java", "-jar", jar, "SysYLexer.g4", "SysYParser.g4"],
+        cwd=work, capture_output=True, text=True, timeout=180)
+    if result.returncode:
+        raise RuntimeError("ANTLR generation failed:\n" +
+                           (result.stderr or result.stdout).strip())
+    sources = sorted(glob.glob(os.path.join(work, "*.java")))
+    result = subprocess.run(["javac", "-cp", jar, *sources], cwd=work,
+                            capture_output=True, text=True, timeout=180)
+    if result.returncode:
+        raise RuntimeError("javac failed:\n" +
+                           (result.stderr or result.stdout).strip())
+    return work + os.pathsep + jar
+
+
 def run_part1():
     print("[----------] Part 1: grammar (valid / invalid syntax)")
     cases = ([(p, True) for p in sorted(glob.glob(
@@ -122,24 +154,35 @@ def run_part1():
     if not cases:
         print(f"{RED}[  ERROR   ]{RESET} no cases found under {PART1_DIR}")
         return 0, 0, []
-    error = ensure_binary(BIN_TYPECHECK)
-    if error:
-        print(f"{RED}[  ERROR   ]{RESET} {error}")
-        return 0, len(cases), ["part1/*"]
+    with tempfile.TemporaryDirectory(prefix="pa3_part1_") as work:
+        try:
+            classpath = prepare_part1(work)
+        except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
+            print(f"{RED}[  ERROR   ]{RESET} Part 1 preparation failed: {exc}")
+            return 0, len(cases), ["part1/*"]
+        return run_parser_cases(cases, classpath)
 
+
+def run_parser_cases(cases, classpath):
     passed, failed = 0, []
     for in_path, want_valid in cases:
         directory = "valid" if want_valid else "invalid"
         name = f"part1/{directory}/" + os.path.basename(in_path)[:-2]
         print(f"[ RUN      ] {name}")
         start = time.perf_counter()
-        result = subprocess.run([BIN_TYPECHECK, in_path],
-                                capture_output=True, text=True)
+        try:
+            result = subprocess.run(["java", "-cp", classpath, "ParseCheck", in_path],
+                                    capture_output=True, text=True, timeout=10)
+            match = re.search(r"^errors=(\d+)$", result.stdout, re.M)
+            errors = int(match.group(1)) if match else None
+            ok = (result.returncode == 0 and errors is not None and
+                  ((errors == 0) if want_valid else (errors > 0)))
+            detail = "" if ok else (
+                f"expected {'zero syntax errors' if want_valid else 'syntax errors'}, "
+                f"got exit {result.returncode}, errors={errors}\n{result.stderr.strip()}")
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            ok, detail = False, str(exc)
         elapsed = int((time.perf_counter() - start) * 1000)
-        ok = (result.returncode == 0) if want_valid else (result.returncode != 0)
-        detail = "" if ok else (
-            f"expected {'exit 0' if want_valid else 'a syntax error'}, "
-            f"got exit {result.returncode}")
         report_case(name, ok, elapsed, detail)
         passed += ok
         if not ok:
