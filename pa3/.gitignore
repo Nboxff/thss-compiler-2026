@@ -1,0 +1,25 @@
+# Editor / IDE
+.vscode/
+.idea/
+.clangd
+
+# ANTLR generated files
+.antlr/
+
+# Build artifacts
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.o
+sysy_callgraph
+
+# Packaging output
+pa3.zip
+autograder.zip
+
+# Python
+__pycache__/
+
+# OS
+.DS_Store

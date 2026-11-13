@@ -1,0 +1,6 @@
+graph TD
+    idx["idx"]
+    val["val"]
+    main["main"]
+    main --> idx
+    main --> val

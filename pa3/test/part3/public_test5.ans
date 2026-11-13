@@ -1,0 +1,11 @@
+graph TD
+    fact["fact"]
+    ping["ping"]
+    pong["pong"]
+    main["main"]
+    fact --> fact
+    ping --> fact
+    ping --> ping
+    pong --> ping
+    main --> fact
+    main --> pong

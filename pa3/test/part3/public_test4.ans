@@ -1,0 +1,8 @@
+graph TD
+    f["f"]
+    g["g"]
+    h["h"]
+    main["main"]
+    main --> f
+    main --> g
+    main --> h

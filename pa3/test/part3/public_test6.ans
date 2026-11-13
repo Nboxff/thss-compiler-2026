@@ -1,0 +1,8 @@
+graph TD
+    cond["cond"]
+    body["body"]
+    step["step"]
+    main["main"]
+    main --> cond
+    main --> body
+    main --> step

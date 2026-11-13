@@ -1,0 +1,13 @@
+graph TD
+    add["add"]
+    fib["fib"]
+    printSum["printSum"]
+    main["main"]
+    twice["twice"]
+    unused["unused"]
+    fib --> fib
+    printSum --> add
+    main --> add
+    main --> printSum
+    main --> fib
+    twice --> add

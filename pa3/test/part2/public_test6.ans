@@ -1,0 +1,5 @@
+Error type 1 at Line 3: Redefined variable: N.
+Error type 1 at Line 4: Redefined variable: data.
+Error type 1 at Line 12: Redefined variable: value.
+Error type 1 at Line 16: Redefined variable: data.
+Error type 1 at Line 26: Redefined variable: add.

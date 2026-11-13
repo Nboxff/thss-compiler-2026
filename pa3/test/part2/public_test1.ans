@@ -1,0 +1,4 @@
+Error type 1 at Line 7: Redefined variable: a.
+Error type 2 at Line 8: Undefined variable: missing.
+Error type 3 at Line 9: Undefined function: unknown.
+Error type 4 at Line 10: Function square expects 1 argument, but 0 were provided.

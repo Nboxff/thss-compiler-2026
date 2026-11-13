@@ -1,0 +1,5 @@
+Error type 1 at Line 1: Redefined variable: x.
+Error type 1 at Line 1: Redefined variable: y.
+Error type 1 at Line 3: Redefined variable: x.
+Error type 1 at Line 13: Redefined variable: n.
+Error type 4 at Line 26: Function sum expects 4 argument(s), but 2 were provided.
